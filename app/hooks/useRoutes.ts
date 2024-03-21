@@ -5,14 +5,18 @@ import { BiSolidLogOut } from 'react-icons/bi';
 import { signOut } from 'next-auth/react';
 import useConversation from '@/app/hooks/useConversation';
 
+// This hook returns the routes for the sidebar
 const useRoutes = () => {
+	// Get the current pathname
 	const pathname = usePathname();
+	// Get the current conversation ID
 	const { conversationId } = useConversation();
 
+	// Define the routes
 	const routes = useMemo(
 		() => [
 			{
-				label: 'Discussions',
+				label: 'Conversations',
 				href: '/conversations',
 				icon: BsChatTextFill,
 				active: pathname === '/conversations' || !!conversationId,
@@ -33,6 +37,7 @@ const useRoutes = () => {
 		[pathname, conversationId]
 	);
 
+	// Return the routes
 	return routes;
 };
 

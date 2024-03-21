@@ -24,7 +24,7 @@ const DesktopItem: React.FC<DesktopItemProps> = ({ label, href, icon: Icon, acti
 				title={label}
 				className={clsx(
 					'group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold text-gray-500 hover:text-[hsl(225,100%,35%)] hover:bg-gray-100',
-					active && 'bg-gray-100 text-[hsl(225,100%,35%)]'
+					active && 'text-[hsl(225,100%,35%)] bg-gray-100'
 				)}
 			>
 				<Icon className='h-8 w-8 shrink-0' />
