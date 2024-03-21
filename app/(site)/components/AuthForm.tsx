@@ -1,19 +1,31 @@
 'use client';
+import axios from 'axios';
 import Button from '@/app/components/Button';
 import Input from '@/app/components/inputs/Input';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FieldValues, SubmitHandler, set, useForm } from 'react-hook-form';
 import AuthSocialButton from './AuthSocialButton';
 import { BsFacebook, BsGoogle } from 'react-icons/bs';
+import { toast } from 'react-hot-toast';
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 // Screen Variants: Login | Register
 type Variant = 'LOGIN' | 'REGISTER';
 
 const AuthForm = () => {
+	const session = useSession();
+	const router = useRouter();
 	// variant state
 	const [variant, setVariant] = useState<Variant>('LOGIN');
 	// isLoading state
 	const [isLoading, setIsLoading] = useState(false);
+
+	useEffect(() => {
+		if (session?.status === 'authenticated') {
+			router.push('/users');
+		}
+	}, [session?.status, router]);
 
 	// Function to toggle between login and register
 	const toggleVariant = useCallback(() => {
@@ -35,7 +47,6 @@ const AuthForm = () => {
 	} = useForm<FieldValues>({
 		defaultValues: {
 			name: '',
-			phone: '',
 			email: '',
 			password: '',
 		},
@@ -46,24 +57,53 @@ const AuthForm = () => {
 		setIsLoading(true);
 
 		if (variant === 'REGISTER') {
-			//Axios Register
+			// Axios Register
+			axios
+				.post('/api/register', data)
+				.then(() => signIn('credentials', data))
+				.catch(() => toast.error('Une erreur est survenue!'))
+				.finally(() => setIsLoading(false));
 		}
 
 		if (variant === 'LOGIN') {
-			//NextAuth SignIn
+			signIn('credentials', {
+				...data,
+				redirect: false,
+			})
+				.then((callback) => {
+					if (callback?.error) {
+						toast.error('Identifiants invalides');
+					}
+					if (callback?.ok && !callback?.error) {
+						toast.success('Vous êtes connecté!');
+						router.push('/users');
+					}
+				})
+				.finally(() => setIsLoading(false));
 		}
+	};
 
-		// Social Auth SignIn
-		const socialAction = (action: string) => {
-			setIsLoading(true);
-			// NextAuth Social SignIn
-		};
+	// Social Auth SignIn
+	const socialAction = (action: string) => {
+		setIsLoading(true);
+
+		signIn(action, { redirect: false })
+			.then((callback) => {
+				if (callback?.error) {
+					toast.error('Identifiants Invalides!');
+				}
+
+				if (callback?.ok) {
+					toast.success('Vous êtes connecté!');
+				}
+			})
+			.finally(() => setIsLoading(false));
 	};
 
 	return (
-		<div className='mt-8 sm:mx-auto sm:w-full sm:max-w-md'>
+		<div className='mt-6 sm:mx-auto sm:w-full sm:max-w-md'>
 			{/* Conditionnal title */}
-			<h2 className='mb-6 text-center text-2xl font-semibold tracking-tight text-[hsl(30,70%,60%)]'>
+			<h2 className='mb-4 text-center text-2xl font-semibold tracking-tight text-[hsl(30,80%,60%)]'>
 				{variant === 'LOGIN' ? 'Connectez-vous à votre compte' : 'Créer votre compte'}
 			</h2>
 
@@ -94,19 +134,6 @@ const AuthForm = () => {
 						disabled={isLoading}
 						placeholder='Inscrire votre mot de passe...'
 					/>
-					{/* Confirm Password */}
-					{variant === 'REGISTER' && (
-						<Input
-							label=''
-							id='confirmPassword'
-							type='password'
-							register={register}
-							errors={errors}
-							disabled={isLoading}
-							placeholder='Confirmer votre mot de passe...'
-						/>
-					)}
-
 					{/* Submit button */}
 					<div>
 						<Button disabled={isLoading} fullWidth type='submit'>
