@@ -1,55 +1,65 @@
-import getCurrentUser from "@/app/actions/getCurrentUser";
-import { NextResponse } from "next/server";
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import { NextResponse } from 'next/server';
 
-import prisma from "@/app/libs/prismadb";
-import { pusherServer } from "@/app/libs/pusher";
+import prisma from '@/app/libs/prismadb';
 
+// Interface for the DELETE request
 interface IParams {
-  conversationId?: string;
+	conversationId?: string;
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: IParams }
-) {
-  try {
-    const { conversationId } = params;
-    const currentUser = await getCurrentUser();
+// Function to handle the DELETE request for a conversation
+export async function DELETE(request: Request, { params }: { params: IParams }) {
+	try {
+		// Get the conversation ID from the request parameters
+		const { conversationId } = params;
+		// Get the current user
+		const currentUser = await getCurrentUser();
 
-    if (!currentUser?.id) {
-      return NextResponse.json(null);
-    }
+		// If there is no current user...
+		if (!currentUser?.id) {
+			// Return a 401 Unauthorized response
+			return NextResponse.json(null);
+		}
 
-    const existingConversation = await prisma.conversation.findUnique({
-      where: {
-        id: conversationId
-      },
-      include: {
-        users: true
-      }
-    });
+		// Find the existing conversation
+		const existingConversation = await prisma.conversation.findUnique({
+			// Find the conversation by its ID
+			where: {
+				id: conversationId,
+			},
+			// Include the users in the conversation
+			include: {
+				users: true,
+			},
+		});
 
-    if (!existingConversation) {
-      return new NextResponse('Invalid ID', { status: 400 });
-    }
+		// If there is no existing conversation...
+		if (!existingConversation) {
+			// Return a 404 Not Found response
+			return new NextResponse('Invalid ID', { status: 400 });
+		}
 
-    const deletedConversation = await prisma.conversation.deleteMany({
-      where: {
-        id: conversationId,
-        userIds: {
-          hasSome: [currentUser.id]
-        },
-      },
-    });
+		// Delete the conversation
+		const deletedConversation = await prisma.conversation.deleteMany({
+			// Delete the conversation by its ID
+			where: {
+				id: conversationId,
+				// Only delete the conversation if the current user is a member
+				userIds: {
+					hasSome: [currentUser.id],
+				},
+			},
+		});
 
-    existingConversation.users.forEach((user) => {
-      if (user.email) {
-        pusherServer.trigger(user.email, 'conversation:remove', existingConversation);
-      }
-    });
+		// Return the deleted conversation
+		return NextResponse.json(deletedConversation);
 
-    return NextResponse.json(deletedConversation)
-  } catch (error) {
-    return NextResponse.json(null);
-  }
+		// If an error occurs...
+	} catch (error) {
+		// Log the error to the console
+		console.error(error);
+		// Return a 500 Internal Server Error response
+		return NextResponse.json(null);
+	}
 }
