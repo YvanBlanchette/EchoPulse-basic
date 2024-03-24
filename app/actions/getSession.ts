@@ -1,5 +1,5 @@
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/libs/authOptions';
 
 // Function to get the session for the user...
 export default async function getSession() {
