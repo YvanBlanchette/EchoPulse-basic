@@ -30,7 +30,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose }
 			})
 			.catch(() => toast.error('Une erreur est survenue lors de la suppression de la conversation.'))
 			.finally(() => setIsLoading(false));
-	}, [conversationId, router, onClose]);
+	}, [conversationId, router]);
 
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>
