@@ -7,6 +7,8 @@ import ActiveStatus from './components/ActiveStatus';
 
 const montserrat = Montserrat({ subsets: ['latin'] });
 
+export const dynamic = 'force-dynamic'; 
+
 export const metadata: Metadata = {
 	title: 'EchoPulse',
 	description: 'The NextGen Messaging App!',
