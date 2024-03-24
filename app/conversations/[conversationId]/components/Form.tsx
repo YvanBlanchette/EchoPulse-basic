@@ -38,7 +38,7 @@ const Form: React.FC<FormProps> = () => {
 				<HiPhoto size={30} className='hover:text-[hsl(225,100%,35%)] text-[hsl(225,100%,75%)] transition cursor-pointer' title='Envoyer une image' />
 			</CldUploadButton>
 			<form onSubmit={handleSubmit(onSubmit)} className='flex items-center gap-2 lg:gap-4 w-full'>
-				<MessageInput id='message' register={register} error={errors} placeholder='Contenu de votre echo...' title='Contenu de votre echo...' />
+				<MessageInput id='message' register={register} errors={errors} placeholder='Contenu de votre echo...' />
 
 				<button
 					type='submit'
