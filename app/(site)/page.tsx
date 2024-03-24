@@ -8,7 +8,7 @@ export default function Home() {
 				<div className='flex gap-2 justify-center items-center mx-auto my-auto'>
 					<Image alt='EchoPulse logo' src={'/images/EchoPulse_logo.svg'} width='0' height='0' sizes='100vw' style={{ width: '60px', height: '60px' }} />
 					<h1 className='font-semibold text-5xl text-[hsl(225,100%,30%)] tracking-tight'>
-						Echo<span className='font-light'>Pulse</span>
+						Echo<span className='font-light text-[hsl(30,80%,60%)]'>Pulse</span>
 					</h1>
 				</div>
 			</div>
