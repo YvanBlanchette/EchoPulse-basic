@@ -14,7 +14,6 @@ interface DesktopMenuProps {
 const DesktopMenu: React.FC<DesktopMenuProps> = ({ currentUser }) => {
 	const routes = useRoutes();
 	const [isOpen, setIsOpen] = useState(false);
-	console.log(currentUser);
 
 	return (
 		<>

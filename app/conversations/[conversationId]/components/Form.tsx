@@ -39,14 +39,15 @@ const Form: React.FC<FormProps> = () => {
 			</CldUploadButton>
 			<form onSubmit={handleSubmit(onSubmit)} className='flex items-center gap-2 lg:gap-4 w-full'>
 				<MessageInput id='message' register={register} error={errors} placeholder='Contenu de votre echo...' title='Contenu de votre echo...' />
+
+				<button
+					type='submit'
+					className='rounded-full p-1 cursor-pointer hover:bg-[hsl(225,100%,35%)] bg-[hsl(225,100%,75%)] text-white transition'
+					title='Envoyer votre Echo'
+				>
+					<FaWifi size={24} className='rotate-[90deg] scale-y-110 scale-x-90' />
+				</button>
 			</form>
-			<button
-				type='submit'
-				className='rounded-full p-1 cursor-pointer hover:bg-[hsl(225,100%,35%)] bg-[hsl(225,100%,75%)] text-white transition'
-				title='Envoyer votre Echo'
-			>
-				<FaWifi size={24} className='rotate-[90deg] scale-y-110 scale-x-90' />
-			</button>
 		</div>
 	);
 };

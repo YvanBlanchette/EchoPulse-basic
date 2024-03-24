@@ -8,6 +8,8 @@ import { Dialog, Transition } from '@headlessui/react';
 import { IoClose, IoTrash } from 'react-icons/io5';
 import Avatar from '@/app/components/sidebar/Avatar';
 import ConfirmationModal from './ConfirmationModal';
+import AvatarGroup from '@/app/components/sidebar/AvatarGroup';
+import useActiveList from '@/app/hooks/useActiveList';
 
 // Define the ProfileDrawerProps interface
 interface ProfileDrawerProps {
@@ -21,10 +23,13 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ isOpen, onClose, data }) 
 	// Get the other user from the conversation
 	const otherUser = useOtherUser(data);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const { members } = useActiveList();
+
+	const isActive = members.indexOf(otherUser?.email!) !== -1;
 
 	// Get the joined date of the other user
 	const joinedDate = useMemo(() => {
-		return format(new Date(otherUser.createdAt), 'PP');
+		return format(new Date(otherUser.createdAt), 'dd MMMM yyyy à HH:mm');
 	}, [otherUser.createdAt]);
 
 	// Set the title of the drawer
@@ -39,8 +44,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ isOpen, onClose, data }) 
 			return `${data.users.length} membres`;
 		}
 		// Otherwise, return 'Active'
-		return 'Active';
-	}, [data]);
+		return isActive ? 'en ligne' : 'hors ligne';
+	}, [data, isActive]);
 
 	// Return the profile drawer
 	return (
@@ -90,24 +95,38 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ isOpen, onClose, data }) 
 											</div>
 											<div className='relative mt-6 flex-1 px-4 sm:px-6'>
 												<div className='flex flex-col items-center'>
-													<div className='mb-2'>
-														<Avatar user={otherUser} />
-													</div>
-													<div>{title}</div>
-													<div className='text-sm text-gray-500'>{statusText}</div>
-													<div className='flex gap-10 my-6'>
-														<div onClick={() => setIsModalOpen(true)} className='flex flex-col gap-3 items-center cursor-pointer hover:opacity-75'>
-															<div className='w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center'>
-																<IoTrash size={20} />
+													<div className='flex flex-col items-center'>
+														<div className='mb-2'>{data.isGroup ? <AvatarGroup users={data.users} /> : <Avatar user={otherUser} />}</div>
+														<div>{title}</div>
+														<div className='text-sm text-gray-500'>{statusText}</div>
+														<div className='flex gap-10 my-6'>
+															<div
+																onClick={() => setIsModalOpen(true)}
+																title='Supprimer la conversation'
+																className='flex flex-col gap-3 items-center cursor-pointer hover:opacity-75'
+															>
+																<div className='w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center'>
+																	<IoTrash size={20} />
+																</div>
 															</div>
-															<div className='text-sm font-light text-neutral-600 '>Supprimer</div>
 														</div>
 													</div>
 													<div className='w-full pb-5 mt-6 pt-5 sm:px-0 sm:pt-0'>
-														<dl className='space-y-8 px-4 sm:space-y-6 sm:px-6'>
+														<dl className='space-y-8 px-4 sm:space-y-6 sm:px-6 text-center'>
+															{data.isGroup && (
+																<div>
+																	<dt className='text-md font-medium text-gray-500 mb-2'>Participants</dt>
+																	{data.users.map((user) => (
+																		<>
+																			<dd className='mt-1 text-sm text-gray-500 sm:col-span-2'>{user.name}</dd>
+																			<dd className='text-xs text-gray-400 sm:col-span-2 mb-3'>{user.email}</dd>
+																		</>
+																	))}
+																</div>
+															)}
 															{!data.isGroup && (
 																<div>
-																	<dt className='text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0'>Courriel</dt>
+																	<dt className='text-sm font-medium text-gray-500'>Courriel</dt>
 																	<dd className='mt-1 text-sm text-gray-500 sm:col-span-2'>{otherUser.email}</dd>
 																</div>
 															)}
@@ -115,7 +134,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ isOpen, onClose, data }) 
 																<>
 																	<hr />
 																	<div>
-																		<dt className='text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0'>Rejoint</dt>
+																		<dt className='text-sm font-medium text-gray-500'>Rejoint</dt>
 																		<dd className='mt-1 text-sm text-gray-900 sm:col-span-2'>
 																			<time dateTime='{joinedDate}'>{joinedDate}</time>
 																		</dd>

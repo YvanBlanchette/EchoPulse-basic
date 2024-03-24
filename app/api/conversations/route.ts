@@ -1,6 +1,7 @@
 import getCurrentUser from '@/app/actions/getCurrentUser';
 import { NextResponse } from 'next/server';
 import prisma from '@/app/libs/prismadb';
+import { pusherServer } from '@/app/libs/pusher';
 
 // Function to handle POST request
 export async function POST(request: Request) {
@@ -47,6 +48,15 @@ export async function POST(request: Request) {
 				include: {
 					users: true,
 				},
+			});
+
+			// Trigger a new conversation event for each user in the conversation.
+			newConversation.users.forEach((user) => {
+				// If the user has an email...
+				if (user.email) {
+					// trigger a new conversation event for the user.
+					pusherServer.trigger(user.email, 'conversation:new', newConversation);
+				}
 			});
 
 			// return the new conversation.
@@ -99,6 +109,15 @@ export async function POST(request: Request) {
 			include: {
 				users: true,
 			},
+		});
+
+		// Trigger a new conversation event for each user in the conversation.
+		newConversation.users.map((user) => {
+			// If the user has an email...
+			if (user.email) {
+				// trigger a new conversation event for the user.
+				pusherServer.trigger(user.email, 'conversation:new', newConversation);
+			}
 		});
 
 		// Return the new conversation.

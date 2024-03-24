@@ -1,7 +1,7 @@
 'use client';
 
 import { User } from '@prisma/client';
-import Modal from '../Modal';
+import Modal from '../modals/Modal';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';

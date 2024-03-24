@@ -5,7 +5,7 @@ import { Fragment } from 'react';
 import { IoClose } from 'react-icons/io5';
 
 interface ModalProps {
-	isOpen: boolean;
+	isOpen?: boolean;
 	onClose: () => void;
 	children: React.ReactNode;
 }
@@ -44,7 +44,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 									{/* Close button */}
 									<button
 										type='button'
-										className='rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[hsl(30,80%,90%)] focus:ring-offset-2'
+										className='rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[hsl(30,80%,90%)] focus:ring-offset-2 transition'
 										onClick={onClose}
 									>
 										<IoClose size={24} className='h-6 w-6' />
